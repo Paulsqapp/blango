@@ -27,6 +27,7 @@ def author_details(author, current_user):
         suffix = ""
 
     '''
+    # format_html can be used to replace both safe and make_safe
     if author.email:
         prefix = format_html('<a href="mailto:{}">', author.email)
         suffix = format_html("</a>")
