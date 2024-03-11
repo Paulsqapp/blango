@@ -44,6 +44,8 @@ class Dev(Configuration):
         'django.contrib.staticfiles',
 
         'blog',
+        'blango_auth',
+        
         #3rd party apps
         "crispy_forms", 
         "crispy_bootstrap5",
@@ -193,6 +195,9 @@ class Dev(Configuration):
         "level": "DEBUG",
         },
     }
+    
+    #User models
+    AUTH_USER_MODEL = "blango_auth.User"
 class Prod(Dev):
     DEBUG = False
     SECRET_KEY = values.SecretValue()
