@@ -41,6 +41,7 @@ class Dev(Configuration):
         'django.contrib.contenttypes',
         'django.contrib.sessions',
         'django.contrib.messages',
+        "django.contrib.sites",
         'django.contrib.staticfiles',
 
         'blog',
@@ -50,6 +51,12 @@ class Dev(Configuration):
         "crispy_forms", 
         "crispy_bootstrap5",
         'debug_toolbar',
+
+        # DjDT
+        "allauth", 
+        "allauth.account", 
+        "allauth.socialaccount", 
+        "allauth.socialaccount.providers.google"
         
 
     ]
@@ -198,6 +205,14 @@ class Dev(Configuration):
     
     #User models
     AUTH_USER_MODEL = "blango_auth.User"
+
+    #DjDT
+    SITE_ID = 1
+    ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+    ACCOUNT_EMAIL_REQUIRED = True
+    ACCOUNT_USERNAME_REQUIRED = False
+    ACCOUNT_AUTHENTICATION_METHOD = "email"
+
 class Prod(Dev):
     DEBUG = False
     SECRET_KEY = values.SecretValue()
