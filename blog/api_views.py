@@ -7,8 +7,10 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from blog.models import Post
+from blog.api.serializers import PostSerializer
 
-
+'''
+previous code before serializers
 def post_to_dict(post):
     return {
         "pk": post.pk,
@@ -21,7 +23,6 @@ def post_to_dict(post):
         "summary": post.summary,
         "content": post.content,
     }
-
 
 @csrf_exempt
 def post_list(request):
@@ -58,3 +59,41 @@ def post_detail(request, pk):
         return HttpResponse(status=HTTPStatus.NO_CONTENT)
 
     return HttpResponseNotAllowed(["GET", "PUT", "DELETE"])
+
+'''
+
+@csrf_exempt
+def post_list(request):
+    if request.method == "GET":
+       posts = Post.objects.all()
+       return JsonResponse({"data": PostSerializer(posts, many=True).data})
+    elif request.method == "POST":
+        post_data = json.loads(request.body)
+        serializer = PostSerializer(data=post_data)
+        serializer.is_valid(raise_exception=True)
+        post = serializer.save()
+        return HttpResponse(
+            status=HTTPStatus.CREATED,
+            headers={"Location": reverse("api_post_detail", args=(post.pk,))},
+        )
+
+    return HttpResponseNotAllowed(["GET", "POST"])
+
+
+@csrf_exempt
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == "GET":
+        return JsonResponse(PostSerializer(post).data)
+    elif request.method == "PUT":
+        serializer = PostSerializer(post, data=post_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return HttpResponse(status=HTTPStatus.NO_CONTENT)
+    elif request.method == "DELETE":
+        post.delete()
+        return HttpResponse(status=HTTPStatus.NO_CONTENT)
+
+    return HttpResponseNotAllowed(["GET", "PUT", "DELETE"])
+

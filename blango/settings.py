@@ -53,6 +53,7 @@ class Dev(Configuration):
         'debug_toolbar',
 
         # DjDT
+        'rest_framework',
         "allauth", 
         "allauth.account", 
         "allauth.socialaccount", 
