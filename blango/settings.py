@@ -54,6 +54,9 @@ class Dev(Configuration):
 
         # DjDT
         'rest_framework',
+        'rest_framework.authtoken',
+        
+        #allauth
         "allauth", 
         "allauth.account", 
         "allauth.socialaccount", 
@@ -172,6 +175,14 @@ class Dev(Configuration):
 
     #DjDT
     INTERNAL_IPS = ["192.168.10.93"]
+
+    REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        ]
+      }
     
     #password hashers
     PASSWORD_HASHERS = [
