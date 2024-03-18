@@ -2,7 +2,7 @@ from rest_framework import serializers
 from blog.models import Post, Tag
 from blango_auth.models import User
 
-
+#PostDetailSerializer, is missing
 class PostSerializer(serializers.ModelSerializer):
     tags = serializers.SlugRelatedField(
         slug_field="value", many=True, queryset=Tag.objects.all()
@@ -21,3 +21,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "email"]
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"
