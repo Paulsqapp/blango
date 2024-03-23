@@ -51,6 +51,7 @@ class Dev(Configuration):
         "crispy_forms", 
         "crispy_bootstrap5",
         'debug_toolbar',
+        'django_filters',
 
         # DjDT
         'rest_framework',
@@ -188,6 +189,7 @@ class Dev(Configuration):
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
         ],
+        # Throttling
         "DEFAULT_THROTTLE_CLASSES": [
             "blog.api.throttling.AnonSustainedThrottle",
             "blog.api.throttling.AnonBurstThrottle",
@@ -199,7 +201,15 @@ class Dev(Configuration):
             "anon_burst": "10/minute",
             "user_sustained": "5000/day",
             "user_burst": "100/minute",
-        },        
+        },   
+        #pagination
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+        "PAGE_SIZE": 100,    
+        #filtering
+        "DEFAULT_FILTER_BACKENDS": [
+            "django_filters.rest_framework.DjangoFilterBackend",
+            "rest_framework.filters.OrderingFilter"
+        ],
       }
     
     #password hashers

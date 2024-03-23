@@ -1,4 +1,4 @@
-
+from blog.api.filters import PostFilterSet
 from blog.api.serializers import (PostSerializer, UserSerializer, 
     TagSerializer)
 from blog.api.permissions import AuthorModifyOrReadOnly,IsAdminUserForObject
@@ -21,6 +21,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 class PostViewSet(viewsets.ModelViewSet):
+    #filterset_fields = ["author", "tags"] # previous
+    filterset_class = PostFilterSet
+    ordering_fields = ["published_at", "author", "title", "slug"]
     permission_classes = [AuthorModifyOrReadOnly | IsAdminUserForObject]
     queryset = Post.objects.all()
 
@@ -68,10 +71,17 @@ class PostViewSet(viewsets.ModelViewSet):
     @method_decorator(vary_on_headers("Authorization"))
     @method_decorator(vary_on_cookie)
     @action(methods=["get"], detail=False, name="Posts by the logged in user")
-    def mine(self, request): # ????
+    def mine(self, request):
         if request.user.is_anonymous:
             raise PermissionDenied("You must be logged in to see which Posts are yours")
         posts = self.get_queryset().filter(author=request.user)
+
+        page = self.paginate_queryset(posts)
+
+        if page is not None:
+            serializer = PostSerializer(page, many=True, context={"request": request})
+            return self.get_paginated_response(serializer.data)
+
         serializer = PostSerializer(posts, many=True, context={"request": request})
         return Response(serializer.data)
 
@@ -83,10 +93,12 @@ class PostViewSet(viewsets.ModelViewSet):
     @method_decorator(cache_page(300))
     def get(self, *args, **kwargs):
         return super(UserDetail, self).get(*args, *kwargs)       
-'''
-REPLACED WITH POSTVIEWSET        
+
+#REPLACED WITH POSTVIEWSET        
 class PostList(generics.ListCreateAPIView):
     queryset = Post.objects.all()
+    ordering_fields = ["published_at", "author", "title", "slug"]
+    filterset_class = PostFilterSet
     serializer_class = PostSerializer
 
 
@@ -95,7 +107,7 @@ class PostDetail(generics.RetrieveUpdateDestroyAPIView):
     #permission_classes = [IsAdminUser]
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-'''
+
 
 class UserDetail(generics.RetrieveAPIView):
     lookup_field = "email"
@@ -109,6 +121,12 @@ class TagViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=True, name="Posts with the Tag")
     def posts(self, request, pk=None):
         tag = self.get_object()
+        page = self.paginate_queryset(tag.posts)
+        if page is not None:
+            post_serializer = PostSerializer(
+                page, many=True, context={"request": request}
+            )
+            return self.get_paginated_response(post_serializer.data)
         post_serializer = PostSerializer(
             tag.posts, many=True, context={"request": request}
         )
