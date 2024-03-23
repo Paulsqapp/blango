@@ -53,6 +53,7 @@ class Dev(Configuration):
         "crispy_bootstrap5",
         'debug_toolbar',
         'django_filters',
+        'versatileimagefield',
 
         # DjDT
         'rest_framework',
@@ -273,6 +274,8 @@ class Dev(Configuration):
         "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
         "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     }
+    #MEDIA
+    MEDIA_ROOT = BASE_DIR / "media"
 class Prod(Dev):
     DEBUG = False
     SECRET_KEY = values.SecretValue()
